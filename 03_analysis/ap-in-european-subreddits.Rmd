@@ -1,0 +1,78 @@
+---
+title: "Affective Polarization in European Subreddits"
+author: "Oliver Julier"
+date: "2025-03-28"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## 1 Introduction
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R gicode chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## 2 Theory
+
+### 2.1 Affective Polarization
+
+What is AP? Social Identity Theory?
+
+What causes AP?
+
+How and when are they usually measured?
+
+Alternative measurements in current literature.
+
+### 2.2 Political shocks
+
+What are political shocks?
+
+Political shocks have an effect on what? Mainly international politics and foreign policy.
+
+Why it makes sense to look at "political shocks -> AP".
+
+### 2.3 Hypotheses
+
+H1: Political shocks have an effect on AP in European Subreddits.
+
+H2a: External (global) political shocks lead to lower AP scores in European Subreddits.
+
+H2b: Internal (European) political shocks lead to higher AP scores in European Subreddits.
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+## 3 Methods
+
+### 3.1 Data acquisition
+
+Politosphere with comments from European Subreddits between 2008 to 2019.
+
+Comments filtered by region "eu" and "uk".
+
+### 3.2 Analysis using LLM
+
+ChatGPT API
+
+## 4 Results
+
+Before and after Trump Election 2016 vs. Brexit Referendum 2016
+
+## 5 Discussion
+
+## 6 Summary
+
+## Literature
