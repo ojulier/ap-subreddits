@@ -148,6 +148,11 @@ get_classification <- function(comment_text, prompt_template) {
   return(numbers[1:2])
 }
 
+# Testing of the function get_classification
+sample_comment <- df_categorized$body[8]
+get_classification(sample_comment, prompt_template)
+
+
 # Loop through each comment in df_categorized using the "body" column
 for (i in seq_len(nrow(df_categorized))) {
   comment_text <- df_categorized$body[i]
@@ -158,14 +163,6 @@ for (i in seq_len(nrow(df_categorized))) {
   # Update the dataframe with the returned classification numbers
   df_categorized$classification1[i] <- classification_numbers[1]
   df_categorized$classification2[i] <- classification_numbers[2]
-  
-  # Optional: Print progress every 10 comments
-  if (i %% 10 == 0) {
-    cat("Processed", i, "comments\n")
-  }
-  
-  # Optional: Pause briefly to avoid hitting rate limits
-  Sys.sleep(1)
 }
 
 # Export the updated dataframe to a CSV file
