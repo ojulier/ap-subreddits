@@ -19,7 +19,8 @@ head(ukpolitics_2016_10)
 # Create an initial dataframe with needed columns
 df <- data.frame(
   author = ukpolitics_2016_10$author,
-  body = ukpolitics_2016_10$body_cleaned,
+  body = ukpolitics_2016_10$body,
+  body_cleaned = ukpolitics_2016_10$body_cleaned,
   created_utc = ukpolitics_2016_10$created_utc,
   subreddit = ukpolitics_2016_10$subreddit,
   score = ukpolitics_2016_10$score,
