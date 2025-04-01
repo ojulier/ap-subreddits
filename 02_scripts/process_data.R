@@ -5,41 +5,68 @@ library(httr)
 library(dplyr)
 
 # Open a connection to the file
-con <- file("00_large-files/comments_extracted_2016-10.json", open = "r")
+con <- file("00_large-files/comments_extracted_2016-06.json", open = "r")
 
 # Stream in the JSON data
-ukpolitics_2016_10 <- stream_in(con)
+ukpolitics_2016_06 <- stream_in(con)
 
 # Close the connection
 close(con)
 
-# View the first few rows to confirm
-head(ukpolitics_2016_10)
-
 # Create an initial dataframe with needed columns
 df <- data.frame(
-  author = ukpolitics_2016_10$author,
-  body = ukpolitics_2016_10$body,
-  body_cleaned = ukpolitics_2016_10$body_cleaned,
-  created_utc = ukpolitics_2016_10$created_utc,
-  subreddit = ukpolitics_2016_10$subreddit,
-  score = ukpolitics_2016_10$score,
-  parent_id = ukpolitics_2016_10$parent_id,
-  link_id = ukpolitics_2016_10$link_id,
+  author = ukpolitics_2016_06$author,
+  body = ukpolitics_2016_06$body,
+  body_cleaned = ukpolitics_2016_06$body_cleaned,
+  created_utc = ukpolitics_2016_06$created_utc,
+  subreddit = ukpolitics_2016_06$subreddit,
+  score = ukpolitics_2016_06$score,
+  parent_id = ukpolitics_2016_06$parent_id,
+  link_id = ukpolitics_2016_06$link_id,
   stringsAsFactors = FALSE
 )
 
-# Count number of comments per user, excluding "[deleted]"
-top_users <- df %>%
-  filter(author != "[deleted]") %>%  # Remove deleted users
-  count(author, sort = TRUE)  # Count comments per user and sort in descending order
+# Convert the UNIX timestamp (created_utc) to POSIXct
+df$created_datetime <- as.POSIXct(df$created_utc, origin = "1970-01-01", tz = "UTC")
 
-# Filter the dataframe for scores > 99 or < -39 (for reducing the data frame in size)
-df_filtered <- df %>%
-  filter(score > 219 | score < -59)
+# Define the event time.
+# The Brexit results were announced on Friday 24 June 2016 at 07:20 BST.
+# Since BST is UTC+1, the equivalent time in UTC is 06:20.
+event_time_utc <- as.POSIXct("2016-06-24 06:20:00", tz = "UTC")
 
-# Create a new dataframe based on df_filtered and add new columns for classifications
-df_categorized <- df_filtered %>%
+# Define the time windows:
+# Five days before the event: from 5 days before event_time to event_time
+start_pre <- event_time_utc - 5 * 24 * 60 * 60  # 5 days before event_time
+end_pre   <- event_time_utc
+
+# Five days after the event: from event_time to 5 days after event_time
+start_post <- event_time_utc
+end_post   <- event_time_utc + 5 * 24 * 60 * 60  # 5 days after event_time
+
+# Data frame for five days before the event (up to event_time)
+df_before <- df %>%
+  filter(created_datetime >= start_pre & created_datetime < end_pre & (score >= 10 | score <= -10))
+
+# Data frame for five days after the event (from event_time to end_post)
+df_after <- df %>%
+  filter(created_datetime >= start_post & created_datetime < end_post & (score >= 10 | score <= -10))
+
+
+          # Count number of comments per user, excluding "[deleted]"
+          top_users <- df %>%
+            filter(author != "[deleted]") %>%  # Remove deleted users
+            count(author, sort = TRUE)  # Count comments per user and sort in descending order
+
+          # Filter the dataframe for scores > 99 or < -39 (for reducing the data frame in size)
+          df_filtered <- df %>%
+            filter(score > 219 | score < -59)
+
+# Create a new dataframe based on df_after & df_before and add new columns for classifications
+df_after_cat <- df_after %>%
+  mutate(classification1 = NA_real_,
+         classification2 = NA_real_)
+
+df_before_cat <- df_before %>%
   mutate(classification1 = NA_real_,
          classification2 = NA_real_)
 
@@ -149,20 +176,20 @@ get_classification <- function(comment_text, prompt_template) {
 }
 
 # Testing of the function get_classification
-sample_comment <- df_categorized$body[8]
+sample_comment <- df_before_cat$body[12]
 get_classification(sample_comment, prompt_template)
 
 
-# Loop through each comment in df_categorized using the "body" column
-for (i in seq_len(nrow(df_categorized))) {
-  comment_text <- df_categorized$body[i]
+# Loop through each comment in data frame using the "body" column
+for (i in seq_len(nrow(df_before_cat))) {
+  comment_text <- df_before_cat$body[i]
   
   # Get the classification numbers from the API
   classification_numbers <- get_classification(comment_text, prompt_template)
   
   # Update the dataframe with the returned classification numbers
-  df_categorized$classification1[i] <- classification_numbers[1]
-  df_categorized$classification2[i] <- classification_numbers[2]
+  df_before_cat$classification1[i] <- classification_numbers[1]
+  df_before_cat$classification2[i] <- classification_numbers[2]
 }
 
 # Export the updated dataframe to a CSV file
