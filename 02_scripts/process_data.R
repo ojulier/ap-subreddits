@@ -45,11 +45,11 @@ end_post   <- event_time_utc + 5 * 24 * 60 * 60  # 5 days after event_time
 
 # Data frame for five days before the event (up to event_time)
 df_before <- df %>%
-  filter(created_datetime >= start_pre & created_datetime < end_pre & (score >= 10 | score <= -10))
+  filter(created_datetime >= start_pre & created_datetime < end_pre & (score >= 20 | score <= -10))
 
 # Data frame for five days after the event (from event_time to end_post)
 df_after <- df %>%
-  filter(created_datetime >= start_post & created_datetime < end_post & (score >= 10 | score <= -10))
+  filter(created_datetime >= start_post & created_datetime < end_post & (score >= 20 | score <= -10))
 
 
           # Count number of comments per user, excluding "[deleted]"
@@ -94,11 +94,15 @@ Assess the extent to which a post expresses affective polarization—i.e., emoti
  
 7: **Neutral / Non-Polarized Political Content** – Engages with politics but without emotional language, hostility, or group-based framing. May involve policy discussion, information sharing, or procedural commentary.
  
-8: **Non-Political Content** – The post does not address political, ideological, or group-based topics. Includes entertainment, memes, or everyday conversation.
+99: **Non-Political Content** – The post does not address political, ideological, or group-based topics. Includes entertainment, memes, or everyday conversation.
  
-## Example 
+## Example 1
 Post: “The other side doesn’t want compromise—they want to destroy everything decent. You can’t reason with that.” 
 Response: 2
+
+## Example 2
+Post: “It doesn't make sense to discuss about the past. We have to look for solutions together now.” 
+Response: 6
 
 # TASK 2 – Emotional Tone (Affect) in Social Media Posts 
 Assess the dominant emotional tone conveyed in the post, based on the author's language, framing, and affective cues. Consider explicit emotional expressions (e.g., “I’m angry,” “this is wonderful”) and implicit indicators (e.g., sarcasm, exclamation marks, emotionally loaded adjectives). Classify posts according to their **primary emotional tone**, even if multiple emotions are present. If no clear emotional tone is detectable, choose the neutral category.
@@ -122,13 +126,24 @@ Assess the dominant emotional tone conveyed in the post, based on the author's l
 8: **Neutral / Factual** – The post maintains a neutral tone without affective charge. It presents information, asks questions, or reflects without emotional expression.
  
 9: **Mixed / Ambiguous Affect** – Multiple emotions are equally present, or the tone is unclear. May include contrastive elements, vague tone, or emotionally confusing content.
+
+99: **Invalid** – Could not be assigned to any of the categories.
  
-## Example 
+## Example 1
 Post: “I can’t believe people are STILL defending this nonsense. It’s infuriating.” 
 Response: 1
 
-## Coding format
-Do both tasks and then print only the two codes of the classifications separated by a comma. Example: 2, 1"
+## Example 2
+Post: “Finally, some good news.” 
+Response: 4
+
+# Coding format
+Do both tasks and then print only the two codes of the classifications separated by a comma.
+Use code 99 for Task 1 and code 99 for Task 2 as a last resort if you cannot assign any category.
+
+Only use the output format presented in the following two examples:
+Example 1 of final output: 2, 1
+Example 2 of final output: 6, 5"
 
 # Authentication
 APIkey <- readLines("../openai_key.txt")   # place your API key in a .txt file
@@ -176,21 +191,25 @@ get_classification <- function(comment_text, prompt_template) {
 }
 
 # Testing of the function get_classification
-sample_comment <- df_before_cat$body[12]
+sample_comment <- df_after_cat$body[13]
 get_classification(sample_comment, prompt_template)
 
 
 # Loop through each comment in data frame using the "body" column
-for (i in seq_len(nrow(df_before_cat))) {
-  comment_text <- df_before_cat$body[i]
+for (i in seq_len(nrow(df_after_cat))) {
+  comment_text <- df_after_cat$body[i]
   
   # Get the classification numbers from the API
   classification_numbers <- get_classification(comment_text, prompt_template)
   
   # Update the dataframe with the returned classification numbers
-  df_before_cat$classification1[i] <- classification_numbers[1]
-  df_before_cat$classification2[i] <- classification_numbers[2]
+  df_after_cat$classification1[i] <- classification_numbers[1]
+  df_after_cat$classification2[i] <- classification_numbers[2]
+  
+  Sys.sleep(1)
 }
 
 # Export the updated dataframe to a CSV file
-write.csv(df_categorized, "df_categorized.csv", row.names = FALSE)
+write.csv(df_before_cat, "01_data/df_before_cat.csv", row.names = FALSE)
+write.csv(df_after_cat, "01_data/df_after_cat.csv", row.names = FALSE)
+
