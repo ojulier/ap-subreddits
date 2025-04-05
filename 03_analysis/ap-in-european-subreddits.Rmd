@@ -1,7 +1,7 @@
 ---
 title: "Affective Polarization in European Subreddits"
 author: "Oliver Julier"
-date: "2025-03-28"
+date: "2025-04-04"
 output: html_document
 ---
 
@@ -11,65 +11,25 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## 1 Introduction
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+This project investigates the impact of political shocks on online political discourse by analyzing Reddit comments from the ukpolitics subreddit. Specifically, the project examines user comments made during the five days preceding and the five days following the announcement of the Brexit referendum results. The primary research question guiding this analysis is: **How does the announcement of the Brexit referendum results, as a political shock, influence the affective polarization present in online political discussions?** By comparing extreme positive and negative comments (with scores of 20 or higher and -10 or lower, respectively), this study seeks to uncover shifts in emotional tone and political sentiment that may signal changes in affective polarization over this critical period.
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R gicode chunks within the document. You can embed an R code chunk like this:
+## 2 Theoretical Background and Hypotheses
+
+Affective polarization, often defined as the degree of emotional, moral, or identity-based division among political groups, is typically measured through large-scale surveys. These surveys assess feelings of warmth or hostility toward political out-groups and are usually conducted on a multi-year cycle, such as after major elections. However, due to their reliance on infrequent, self-reported data, traditional measurements can miss the rapid, dynamic shifts in public sentiment that occur during political shocks. Social media platforms like Reddit offer an alternative data source that captures real-time expressions of affect, providing a window into the immediate impacts of political events.
+
+Political shocks, such as the sudden announcement of the Brexit referendum results, have the potential to rapidly alter the emotional landscape of political discourse. These events can intensify pre-existing divisions or even catalyze new forms of polarization, as individuals react to unexpected outcomes. This study posits that the political shock induced by the Brexit announcement will lead to a measurable increase in affective polarization in online discussions. Based on these insights, one hypothesis guiding the research is that **the level of affective polarization—reflected in both the tone and emotional intensity of user comments—will be significantly higher in the five days following the Brexit announcement compared to the preceding period.**
+
+## 3 Methods
+
+The data for this analysis was sourced from the politosphere dataset. Using provided scripts, comments from the ukpolitics subreddit were extracted for two distinct periods: five days before and five days after the Brexit referendum results were announced. The dataset was further refined to include only those comments that exhibited extreme sentiment, with scores of 20 or higher (positive sentiment) and -10 or lower (negative sentiment). This approach serves as an initial experimental step to gauge changes in affective polarization as a response to the political shock of the Brexit announcement.
+
+For the analytical phase, I employed the ChatGPT API using the 4o model to categorize the comments based on affective polarization and emotional tone. The prompt used for this categorization instructed the model to assess political posts in terms of in-group favoritism, out-group hostility, and overall emotional tone, classifying each comment into pre-defined categories. Although this method provides a structured approach to measuring affective polarization, I encountered some difficulties with the analysis: a significant number of comments were returned as NAs in the categorization process. This issue suggests potential challenges in adapting the prompt to the nuances of social media language, an aspect that will be addressed in future refinements of the analysis methodology.
+
+## 4 Results
 
 ```{r cars}
 summary(cars)
 ```
-
-## 2 Theory
-
-### 2.1 Affective Polarization
-
-What is AP? Social Identity Theory?
-
-What causes AP?
-
-How and when are they usually measured?
-
-Alternative measurements in current literature.
-
-### 2.2 Political shocks
-
-What are political shocks?
-
-Political shocks have an effect on what? Mainly international politics and foreign policy.
-
-Why it makes sense to look at "political shocks -> AP".
-
-### 2.3 Hypotheses
-
-H1: Political shocks have an effect on AP in European Subreddits.
-
-H2a: External (global) political shocks lead to lower AP scores in European Subreddits.
-
-H2b: Internal (European) political shocks lead to higher AP scores in European Subreddits.
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
-
-## 3 Methods
-
-### 3.1 Data acquisition
-
-Politosphere with comments from European Subreddits between 2008 to 2019.
-
-Comments filtered by region "eu" and "uk".
-
-### 3.2 Analysis using LLM
-
-ChatGPT API
-
-## 4 Results
-
-Before and after Trump Election 2016 vs. Brexit Referendum 2016
 
 ## 5 Discussion
 
