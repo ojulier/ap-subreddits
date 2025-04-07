@@ -150,7 +150,7 @@ APIkey <- readLines("../openai_key.txt")   # place your API key in a .txt file
 bearer <- stringr::str_c("Authorization: Bearer ", APIkey)
 
 # Define a function to call the API and extract the two classification numbers
-get_classification <- function(comment_text, prompt_template) {
+get_classification <- function(comment_text, prompt_template, model = "gpt-4o", APIkey) {
   # Build the messages list for the ChatGPT API
   messages <- list(
     list(
@@ -163,51 +163,71 @@ get_classification <- function(comment_text, prompt_template) {
     )
   )
   
-  # Make the API request
-  response <- httr::POST(
-    url = "https://api.openai.com/v1/chat/completions",
-    content_type("application/json"),
-    add_headers(Authorization = paste("Bearer", APIkey)),
-    body = list(
-      model = "gpt-4o",
-      messages = messages
-    ),
-    encode = "json"
-  )
+  # Make API call with error handling
+  response <- tryCatch({
+    httr::POST(
+      url = "https://api.openai.com/v1/chat/completions",
+      httr::content_type("application/json"),
+      httr::add_headers(Authorization = paste("Bearer", APIkey)),
+      body = list(model = model, messages = messages),
+      encode = "json"
+    )
+  }, error = function(e) {
+    warning("API request failed: ", e$message)
+    return(NULL)
+  })
   
-  # Parse the response
-  res_content <- content(response)
+  if (is.null(response)) {
+    return(list(score1 = NA, score2 = NA, raw_output = NA))
+  }
+  
+  # Parse API content safely
+  res_content <- tryCatch({
+    httr::content(response, as = "parsed")
+  }, error = function(e) {
+    warning("Failed to parse API response: ", e$message)
+    return(NULL)
+  })
+  
+  # Check for error or malformed content
+  if (is.null(res_content) || is.null(res_content$choices) || length(res_content$choices) == 0) {
+    warning("Empty or malformed API response.")
+    return(list(score1 = NA, score2 = NA, raw_output = NA))
+  }
+  
   output_text <- res_content$choices[[1]]$message$content
   
-  # Extract numbers using regex (assuming output like "6, 7")
-  numbers <- as.numeric(unlist(regmatches(output_text, gregexpr("[0-9]+", output_text))))
+  # Use improved regex: capture exactly two 1- or 2-digit numbers
+  numbers <- as.numeric(unlist(regmatches(output_text, gregexpr("\\b\\d{1,2}\\b", output_text))))
   
   if (length(numbers) < 2) {
     warning("Less than 2 numbers found in API response for comment: ", comment_text)
-    return(c(NA, NA))
+    return(list(score1 = NA, score2 = NA, raw_output = output_text))
   }
   
-  return(numbers[1:2])
+  return(list(score1 = numbers[1], score2 = numbers[2], raw_output = output_text))
 }
 
 # Testing of the function get_classification
-sample_comment <- df_after_cat$body[13]
-get_classification(sample_comment, prompt_template)
+sample_comment <- df_before_cat$body[30]
+get_classification(sample_comment, prompt_template, APIkey = APIkey)
 
 
 # Loop through each comment in data frame using the "body" column
-for (i in seq_len(nrow(df_after_cat))) {
-  comment_text <- df_after_cat$body[i]
-  
-  # Get the classification numbers from the API
-  classification_numbers <- get_classification(comment_text, prompt_template)
-  
-  # Update the dataframe with the returned classification numbers
-  df_after_cat$classification1[i] <- classification_numbers[1]
-  df_after_cat$classification2[i] <- classification_numbers[2]
-  
-  Sys.sleep(1)
-}
+df_before_cat <- df_before_cat %>%
+  rowwise() %>%
+  mutate(
+    out = {
+      # Pause for a short time on each row
+      Sys.sleep(2)
+      list(get_classification(body, prompt_template, APIkey = APIkey))
+    },
+    classification1 = out$score1,
+    classification2 = out$score2,
+    raw_output = out$raw_output
+  ) %>%
+  select(-out) %>%
+  ungroup()
 
 # Export the updated dataframe to a CSV file
 write.csv(df_before_cat, "01_data/df_before_cat.csv", row.names = FALSE)
