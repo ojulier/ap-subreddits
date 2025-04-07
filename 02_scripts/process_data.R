@@ -214,7 +214,7 @@ get_classification(sample_comment, prompt_template, APIkey = APIkey)
 
 
 # Loop through each comment in data frame using the "body" column
-df_before_cat <- df_before_cat %>%
+df_after_cat <- df_after_cat %>%
   rowwise() %>%
   mutate(
     out = {
