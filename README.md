@@ -1,20 +1,16 @@
----
-title: "Affective Polarization in the Subreddit r/ukpolitics"
-author: "Oliver Julier"
-date: "11.04.2025"
----
-
-## Milestones
+# Affective polarization in the Subreddit r/ukpolitics
+##### Oliver Julier
+##### 11.04.2025
 
 ### 1. Which data am I using?
 
-::: {style="text-align: justify"}
+<div style="text-align: justify">
 This project investigates the impact of political shocks on online political discourse by analyzing Reddit comments from the ukpolitics subreddit. Specifically, the project examines user comments made during the five days preceding and the five days following the announcement of the Brexit referendum results. The primary research question guiding this analysis is: **How does a political shock influence the affective polarization in online political discussions?** By comparing extreme positive and negative comments (with scores of 20 or higher and -10 or lower, respectively), this study seeks to uncover shifts in emotional tone and political sentiment that may signal changes in affective polarization over this critical period.
 
 Affective polarization, often defined as the degree of emotional, moral, or identity-based division among political groups, is typically measured through large-scale surveys. These surveys assess feelings of warmth or hostility toward political out-groups and are usually conducted on a multi-year cycle, such as after major elections. However, due to their reliance on infrequent, self-reported data, traditional measurements can miss the rapid, dynamic shifts in public sentiment that occur during political shocks. Social media platforms like Reddit offer an alternative data source that captures real-time expressions of affect, providing a window into the immediate impacts of political events.
 
 Political shocks, such as the sudden announcement of the Brexit referendum results, have the potential to rapidly alter the emotional landscape of political discourse. These events can intensify pre-existing divisions or even catalyze new forms of polarization, as individuals react to unexpected outcomes. This study posits that the political shock induced by the Brexit announcement will lead to a measurable increase in affective polarization in online discussions.
-:::
+</div>
 
 ### 2. Data acquisition
 
