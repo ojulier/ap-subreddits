@@ -2,6 +2,8 @@ library(ggplot2)
 library(dplyr)
 library(readr)
 library(gridExtra)
+library(tidyr)
+library(scales)
 
 # Read the CSV files
 df_before_brexit <- read_csv("01_data/df_before_cat.csv")
@@ -70,4 +72,24 @@ p_class2 <- ggplot(df_summary_class2, aes(x = classification2, y = percentage, f
   theme_minimal()
 
 # Display both plots
-grid.arrange(p_class1, p_class2, ncol = 1)
+grid.arrange(p_class1, p_class2, ncol = 2)
+
+# Compute counts and relative frequencies (percentages) for each pairing by period
+df_summary <- df_all %>%
+  group_by(period, classification1, classification2) %>%
+  summarise(count = n(), .groups = "drop") %>%
+  group_by(period) %>%
+  mutate(percentage = count / sum(count)) %>%
+  ungroup()
+
+# Create a heatmap that shows the relative frequency of the (classification1, classification2) pairings, faceted by Period
+ggplot(df_summary, aes(x = factor(classification1), y = factor(classification2), fill = percentage)) +
+  geom_tile(color = "white") +
+  geom_text(aes(label = scales::percent(percentage, accuracy = 0.1)), color = "white", size = 2) +
+  facet_wrap(~ period) +
+  scale_fill_gradient(low = "cornflowerblue", high = "coral1", labels = percent_format(accuracy = 1)) +
+  labs(x = "Affective polarization category (classification1)",
+       y = "Emotional tone category (classification2)",
+       fill = "Percentage",
+       title = "Relative frequency of category pairings before and after Brexit referendum") +
+  theme_minimal()
