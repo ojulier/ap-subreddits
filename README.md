@@ -123,5 +123,14 @@ Another finding from the heat map is in line with the descriptive statistics fro
 
 -   Script for analysing data and creating plots: `03_analysis/analyse_data.R`
 
-### 5. Summary
+### 5. Limitations
 
+One limitation of this study lies in the inherent challenges of working with user-generated content and automated text classification. Initially, a substantial number of NA values were produced by the classification function - likely due to transient API issues or rate limiting - which I drastically reduced by introducing a delay with Sys.sleep. Although this improvement enhanced the overall classification rate, the final codes were not systematically validated: I only performed occasional manual checks on selected rows to verify consistency, leaving room for potential misclassification errors. 
+
+Additionally, biases inherent in user-generated data—such as self-selection bias, the influence of echo chambers, and the possibility of trolling or exaggeration—could affect the representativeness of the findings. These factors, combined with the limitations in our automated classification approach, suggest that while the results offer valuable descriptive insights into the dynamics of political discourse, they should be interpreted with caution and supplemented by further rigorous validation and inferential analyses.
+
+### 6. Summary
+
+This project investigates how a political shock - in this case, the announcement of the Brexit referendum results - influences affective polarization in online political discussions within the ukpolitics subreddit. By focusing on comments with extreme sentiment in the five days before and after the announcement, the analysis examines both the standalone prevalence of affective polarization and the interplay between affective polarization and emotional tone through paired category visualizations. The results indicate noticeable shifts in category distributions: although neutral content remains dominant, there is a small decline in extreme out-group hate and a corresponding rise in expressions of high polarization and moderate stereotyping after the announcement. Moreover, the heat map of paired categories highlights that combinations - such as moderate affective polarization paired with sarcasm - remain the most frequent, while other combinations involving expressions of anger become slightly more prevalent after the shock.
+
+While these descriptive findings provide an important snapshot of how political shocks might alter online discourse, further analyses (such as inferential statistics, regression modeling, or topic network analysis) could uncover causal factors and predictive patterns within the data. As a next step, I plan to leverage this data - and/or similar datasets - in my Bachelor’s thesis, thereby extending the descriptive insights gathered here into a more robust and comprehensive study of political discourse dynamics.
